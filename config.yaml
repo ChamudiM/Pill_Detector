@@ -1,0 +1,69 @@
+# Configuration for Pill Counter System
+
+# Dataset Configuration
+dataset:
+  train_size: 0.7
+  val_size: 0.15
+  test_size: 0.15
+  img_size: 640
+  target_format: "jpg"
+
+# Model Configuration
+model:
+  name: "yolov8m" # Options: yolov8n (nano), yolov8s (small), yolov8m (medium), yolov8l (large)
+  pretrained: true
+  device: 0 # GPU device ID, use -1 for CPU
+
+# Training Configuration
+training:
+  epochs: 20
+  batch_size: 8
+  learning_rate: 0.001
+  patience: 30
+  warmup_epochs: 3
+  optimizer: "SGD" # SGD or Adam
+  weight_decay: 0.0005
+  momentum: 0.937
+
+# Inference Configuration
+inference:
+  confidence_threshold: 0.5
+  nms_threshold: 0.45
+  max_detections: 100
+  input_size: 640
+
+# Performance & Optimization
+performance:
+  target_fps: 30
+  max_latency_ms: 50
+  use_half_precision: false
+  frame_skip: 1 # Process every nth frame (1 = all frames)
+
+# Data Augmentation
+augmentation:
+  hsv_h: 0.015
+  hsv_s: 0.7
+  hsv_v: 0.4
+  degrees: 180.0
+  translate: 0.15
+  scale: 0.5
+  flipud: 0.5
+  fliplr: 0.5
+  mosaic: 1.0
+  mixup: 0.0
+
+# Paths
+paths:
+  data_dir: "data"
+  raw_data: "data/raw"
+  processed_data: "data/processed"
+  models_dir: "models"
+  trained_models: "models/trained"
+  logs_dir: "logs"
+
+# Output
+output:
+  save_predictions: true
+  save_visualizations: true
+  visualization_dir: "results/visualizations"
+  metrics_file: "results/metrics.json"
