@@ -111,6 +111,66 @@ class ImagePreprocessor:
         """
         return cv2.bilateralFilter(image, d, sigma_color, sigma_space)
     
+    def apply_morphological_operations(self, image: np.ndarray, 
+                                      operation: str = "open",
+                                      kernel_size: int = 5) -> np.ndarray:
+        """
+        Apply morphological operations.
+        
+        Args:
+            image: Input grayscale image
+            operation: 'open', 'close', 'gradient', 'tophat'
+            kernel_size: Size of the morphological kernel
+            
+        Returns:
+            Processed image
+        """
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, 
+                                          (kernel_size, kernel_size))
+        
+        if operation == "open":
+            return cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
+        elif operation == "close":
+            return cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
+        elif operation == "gradient":
+            return cv2.morphologyEx(image, cv2.MORPH_GRADIENT, kernel)
+        elif operation == "tophat":
+            return cv2.morphologyEx(image, cv2.MORPH_TOPHAT, kernel)
+        else:
+            logger.warning(f"Unknown operation: {operation}")
+            return image
+    
+    def convert_to_grayscale(self, image: np.ndarray) -> np.ndarray:
+        """Convert BGR image to grayscale."""
+        return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    
+    def preprocess_frame(self, frame: np.ndarray, 
+                        apply_blur: bool = True,
+                        apply_normalization: bool = True) -> np.ndarray:
+        """
+        Complete preprocessing pipeline for a single frame.
+        
+        Args:
+            frame: Input frame (BGR)
+            apply_blur: Whether to apply blur
+            apply_normalization: Whether to normalize brightness
+            
+        Returns:
+            Preprocessed frame
+        """
+        # Resize
+        frame = self.resize_image(frame)
+        
+        # Apply blur if requested
+        if apply_blur:
+            frame = self.apply_gaussian_blur(frame, kernel_size=5)
+        
+        # Normalize brightness if requested
+        if apply_normalization:
+            frame = self.normalize_brightness(frame)
+        
+        return frame
+    
     def preprocess_batch(self, frames: list, **kwargs) -> list:
         """
         Preprocess a batch of frames.
