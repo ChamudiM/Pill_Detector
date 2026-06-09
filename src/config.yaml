@@ -1,0 +1,30 @@
+# Dataset Configuration
+dataset:
+  train_size: 0.7
+  val_size: 0.15
+  test_size: 0.15
+  img_size: 640
+
+# Model Configuration
+model:
+  name: yolov8m # yolov8n, yolov8s, yolov8m, yolov8l
+  pretrained: true
+
+# Training Configuration
+training:
+  epochs: 100
+  batch_size: 16
+  learning_rate: 0.001
+  patience: 30
+  device: 0 # GPU device ID
+
+# Inference Configuration
+inference:
+  confidence_threshold: 0.5
+  nms_threshold: 0.45
+  max_detections: 100
+
+# Performance
+performance:
+  target_fps: 30
+  max_latency_ms: 50
