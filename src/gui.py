@@ -230,6 +230,55 @@ class PillCounterGUI:
         thread = threading.Thread(target=self.process_camera, daemon=True)
         thread.start()
     
+    def stop_camera(self) -> None:
+        """Stop camera feed."""
+        self.is_running = False
+        if self.cap:
+            self.cap.release()
+        
+        self.start_btn.config(state=tk.NORMAL)
+        self.stop_btn.config(state=tk.DISABLED)
+        self.status_var.set("Status: Camera stopped")
+    
+    def process_camera(self) -> None:
+        """Process camera frames."""
+        fps_counter = 0
+        fps_time = time.time()
+        
+        try:
+            while self.is_running:
+                ret, frame = self.cap.read()
+                if not ret:
+                    break
+                
+                # Inference
+                start_time = time.time()
+                detections = self.detector.detect_pills(frame)
+                self.processing_time = (time.time() - start_time) * 1000
+                
+                # Draw detections
+                frame = self.detector.draw_boxes(frame, detections)
+                
+                # Count pills
+                self.pill_count = len(detections.boxes)
+                
+                # Update FPS
+                fps_counter += 1
+                elapsed = time.time() - fps_time
+                if elapsed >= 1.0:
+                    self.fps = fps_counter / elapsed
+                    fps_counter = 0
+                    fps_time = time.time()
+                
+                # Display frame
+                self.display_frame(frame)
+                
+                # Update labels
+                self.update_labels()
+        
+        except Exception as e:
+            logger.error(f"Camera processing error: {e}")
+            self.is_running = False
     
     def display_frame(self, frame: object) -> None:
         """Display frame in GUI."""
@@ -289,6 +338,24 @@ class PillCounterGUI:
                     self.status_var.set(f"Status: Loaded {file_path}")
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to process image: {e}")
+    
+    def open_video(self) -> None:
+        """Open and process a video file."""
+        file_path = filedialog.askopenfilename(
+            title="Select Video",
+            filetypes=[("Video files", "*.mp4 *.avi *.mov"), ("All files", "*.*")]
+        )
+        
+        if file_path:
+            try:
+                self.status_var.set(f"Status: Processing video {Path(file_path).name}...")
+                output_path = Path(file_path).stem + "_detected.mp4"
+                self.detector.detect_from_video(file_path, str(output_path))
+                messagebox.showinfo("Success", f"Video processed. Saved to {output_path}")
+                self.status_var.set("Status: Video processing completed")
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to process video: {e}")
+
 
 def main(model_path: str = "models/trained/best.pt") -> None:
     """
