@@ -13,7 +13,7 @@ notebooks = [
 ]
 
 # Create ExecutePreprocessor using our custom kernel
-ep = ExecutePreprocessor(timeout=600, kernel_name='pill_detector_kernel')
+ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
 
 # Make sure working directory for execution is the project root so paths match
 project_root = Path(__file__).resolve().parent.parent
