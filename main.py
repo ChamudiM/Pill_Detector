@@ -86,21 +86,22 @@ def train_model(args):
     trainer.load_model()
     trainer.print_model_summary()
     
-    # Train
-    try:
-        results, model = trainer.train(
-            str(yaml_path),
-            output_dir=args.output_dir,
-            resume=args.resume
-        )
-        
-        # Save model
-        save_path = trainer.save_model(args.output_dir)
-        logger.info(f"Model training completed. Saved to {save_path}")
-        
-    except Exception as e:
-        logger.error(f"Training failed: {e}")
-        return
+    # Train (Commented out: Pre-trained model is already available)
+    logger.info("Skipping training execution - using existing pre-trained model.")
+    # try:
+    #     results, model = trainer.train(
+    #         str(yaml_path),
+    #         output_dir=args.output_dir,
+    #         resume=args.resume
+    #     )
+    #     
+    #     # Save model
+    #     save_path = trainer.save_model(args.output_dir)
+    #     logger.info(f"Model training completed. Saved to {save_path}")
+    #     
+    # except Exception as e:
+    #     logger.error(f"Training failed: {e}")
+    #     return
     
     # Validate
     logger.info("Validating model...")
